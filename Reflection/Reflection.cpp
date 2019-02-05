@@ -5,12 +5,9 @@
 
 using namespace std;
 
-Class ClassInfo = Class(sizeof(Object), "Object", "");
+//Class ClassInfo = Class(sizeof(Object), "Object", "", &Object::create);
 
-Class& Object::getClass() const
-{
-	// TODO: 在此处插入 return 语句
-}
+RUNTIME_IMP(Object, Object)
 
 Class::Class()
 	:
@@ -19,14 +16,15 @@ Class::Class()
 {
 }
 
-Class::Class(int size, std::string name, std::string baseName)
+Class::Class(int size, std::string name, std::string baseName, Contructor ctor, ArrayContructor arrCtor)
 	:
 	Size(size),
 	Name(name),
 	BaseName(baseName),
-	Ctor(nullptr)
+	Ctor(ctor),
+	ArrCtor(arrCtor)
 {
-	registerClass(*this);
+	regist(*this);
 }
 
 std::string Class::getName() const{
@@ -45,12 +43,21 @@ Class& Class::getBaseClass() const {
 	return forName(BaseName);
 }
 
-Object * Class::getInstance(){
-	return (*Ctor)();
+Object * Class::getInstance(size_t size){
+	if (size == 1) {
+		return (*Ctor)();
+	} else {
+		return (*ArrCtor)(size);
+	}
 }
 
-Class Class::forName(std::string name){
-	return ClassMap[name];
+Class& Class::forName(std::string name){
+	auto iter = ClassMap.find(name);
+	if (iter != ClassMap.end()) {
+		throw exception("No match found name.");
+	} else {
+		return *(iter->second);
+	}
 }
 
 bool Class::is(const Class& lhs, const Class& rhs){
@@ -63,11 +70,11 @@ bool Class::is(const Class& lhs, const Class& rhs){
 	}
 }
 
-void Class::registerClass(const Class& classInfo){
-	ClassMap[classInfo.Name] = classInfo;
+void Class::regist(Class& classInfo){
+	ClassMap[classInfo.Name] = &classInfo;
 }
 
-void Class::unregisterClass(const Class& classInfo){
+void Class::unregist(const Class& classInfo){
 	ClassMap.erase(classInfo.Name);
 }
 
