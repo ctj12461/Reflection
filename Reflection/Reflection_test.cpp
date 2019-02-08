@@ -26,7 +26,7 @@ int main(){
         cout << "Create Object..." << endl;
         TestA *p = static_cast<TestA*>(c.getInstance());
         p->print();
-        if (Class::is(c, Object::getClass())) {
+        if (Class::is(TestA(), Object())) {
             cout << "TestA is Object" << endl;
         }
         return 0;

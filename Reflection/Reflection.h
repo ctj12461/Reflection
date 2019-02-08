@@ -33,6 +33,7 @@ public:
 	Object* getInstance(size_t size = 1);
 	static Class& forName(std::string name);
 	static bool is(const Class& lhs, const Class& rhs);
+    static bool is(const Object& lhs, const Object& rhs);
 private:
 	std::string Name;
 	std::string BaseName;

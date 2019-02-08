@@ -77,6 +77,10 @@ bool Class::is(const Class& lhs, const Class& rhs){
 	}
 }
 
+bool Class::is(const Object & lhs, const Object & rhs){
+    return Class::is(lhs.getClass(), rhs.getClass());
+}
+
 void Class::regist(Class& classInfo){
     if (ClassMap == nullptr) {
         ClassMap = new map<std::string, Class*>;
