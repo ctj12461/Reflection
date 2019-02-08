@@ -6,6 +6,10 @@
 
 #include <string>
 #include <map>
+#include <vector>
+
+template<typename Singleton>
+class SingletonWrapper;
 
 class Object;
 
@@ -14,6 +18,7 @@ class Class
 public:
 	using Contructor = Object *(*)();
 	using ArrayContructor = Object *(*)(size_t size);
+    using Map = std::map<std::string, Class*>;
 
 	Class(int size, std::string name, std::string baseName, Contructor ctor, ArrayContructor arrCtor);
     Class(const Class&) = default;
@@ -34,7 +39,8 @@ private:
 	size_t Size;
 	Contructor Ctor;
 	ArrayContructor ArrCtor;
-	static std::map<std::string, Class*> ClassMap;
+	static Map *ClassMap;
+    static SingletonWrapper<Map> Wrapper;
 	static void regist(Class& classInfo);
 	static void unregist(const Class& classInfo);
 

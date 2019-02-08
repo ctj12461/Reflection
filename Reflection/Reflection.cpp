@@ -3,10 +3,11 @@
 #include "stdafx.h"
 #include "Reflection.h"
 #include "Exception.h"
+#include "SingletonWrapper.h"
 
 using namespace std;
-
-std::map<std::string, Class*> Class::ClassMap;
+Class::Map *Class::ClassMap = nullptr;
+SingletonWrapper<Class::Map> Class::Wrapper(&Class::ClassMap);
 
 Class Object::ClassInfo(sizeof(Object), "Object", "", reinterpret_cast<Class::Contructor>(&Object::create), reinterpret_cast<Class::ArrayContructor>(&Object::createArray));
 
@@ -58,8 +59,8 @@ Object * Class::getInstance(size_t size){
 }
 
 Class& Class::forName(std::string name){
-	auto iter = Class::ClassMap.find(name);
-	if (iter != Class::ClassMap.end()) {
+	auto iter = Class::ClassMap->find(name);
+	if (iter == Class::ClassMap->end()) {
 		throw NoNameException("No match found name.");
 	} else {
 		return *(iter->second);
@@ -69,18 +70,21 @@ Class& Class::forName(std::string name){
 bool Class::is(const Class& lhs, const Class& rhs){
 	if (lhs.Name == rhs.Name) {
 		return true;
-	} else if (lhs.Name == "") {
+	} else if (lhs.Name == "" || rhs.Name == "") {
 		return false;
 	} else {
-		return is(lhs, forName(rhs.BaseName));
+		return is(Class::forName(lhs.BaseName), rhs);
 	}
 }
 
 void Class::regist(Class& classInfo){
-    Class::ClassMap.insert(pair<string, Class*>(classInfo.getName(), &classInfo));
+    if (ClassMap == nullptr) {
+        ClassMap = new map<std::string, Class*>;
+    }
+    Class::ClassMap->insert(pair<string, Class*>(classInfo.getName(), &classInfo));
 }
 
 void Class::unregist(const Class& classInfo){
-    Class::ClassMap.erase(classInfo.Name);
+    Class::ClassMap->erase(classInfo.Name);
 }
 

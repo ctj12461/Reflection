@@ -18,7 +18,7 @@ RUNTIME_IMP(TestA, Object)
 
 int main(){
     try {
-        auto c = Class::forName("TestA");
+        auto c = TestA::getClass();
         cout << "Get TestA Class." << endl;
         cout << "--Name : " << c.getName() << endl;
         cout << "--Base Name : " << c.getBaseName() << endl;
@@ -26,6 +26,9 @@ int main(){
         cout << "Create Object..." << endl;
         TestA *p = static_cast<TestA*>(c.getInstance());
         p->print();
+        if (Class::is(c, Object::getClass())) {
+            cout << "TestA is Object" << endl;
+        }
         return 0;
     } catch(exception& e) {
         cerr << e.what();
