@@ -77,7 +77,7 @@ bool Class::is(const Class& lhs, const Class& rhs){
 }
 
 void Class::regist(Class& classInfo){
-    Class::ClassMap[classInfo.Name] = &classInfo;
+    Class::ClassMap.insert(pair<string, Class*>(classInfo.getName(), &classInfo));
 }
 
 void Class::unregist(const Class& classInfo){
